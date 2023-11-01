@@ -22,8 +22,17 @@
 
 #| BEGIN P1 |#
 
-;; Type ::= ...
-; (deftype Type ...)
+#|
+  Type ::= (number)
+         | (arrow Type Type) 
+
+|#
+;; Datatype que representa tipos (número, función, ...) en el lenguaje
+
+
+(deftype Type 
+  (number)
+  (arrow input output))
 
 ;; parse-type : ...
 (define (parse-type t) '???)

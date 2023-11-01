@@ -31,11 +31,14 @@
 
 
 (deftype Type 
-  (number)
-  (arrow input output))
+  (numT)
+  (arrowT input output))
 
-;; parse-type : ...
-(define (parse-type t) '???)
+;; parse-type : pasa un expresión s-expr a una Type
+(define (parse-type t)
+  (match t
+    [n #:when (equal? n 'Number) (numT)]
+    [(list '-> in out) (arrowT (parse-type in) (parse-type out))]))
 
 ;; parse : s-expr -> Expr
 (define (parse s)

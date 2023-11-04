@@ -67,7 +67,8 @@
     [(aTenv id type rest) (if (symbol=? id x) type (tenv-lookup x rest))]
     ))
 
-;; infer-type : ...
+;; infer-type : Expr tenv -> Type
+;; Función que recibe una Expr y retorna su Type
 (define (infer-type expr tenv) 
   (match expr
     [(num n) (numT)]

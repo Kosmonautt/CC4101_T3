@@ -79,20 +79,16 @@
     [(fun s T1 e)
               (define T2 (infer-type e (extend-tenv s T1 tenv)))
               (arrowT T1 T2)]
-    ; [(app e1 e2) 
-    ;           (define e1-type (infer-type e1 tenv))
-    ;           (define e2-type (infer-type e2 tenv))
-    ;           (define is-func 
-    ;             (match e1-type
-    ;               [(arrowT T1 T2) #t]
-    ;               [_ #f])) 
-    ;           (if is-func
-    ;             ((def (arrowT T1 T2) e1-type)
-    ;               (if (equal? e2-type T1)
-    ;                     T2
-    ;                     (error "infer-type: function argument type mismatch")))
-    ;             (error "infer-type: function application to a non-function"))]
-    ))
+    [(app e1 e2)
+        (define e1-type (infer-type e1 tenv))
+        (define e2-type (infer-type e2 tenv))
+
+        (match e1-type
+          [(arrowT T1 T2) 
+                    (if (equal? T1 e2-type)
+                          T2
+                          (error "infer-type: function argument type mismatch"))]
+          [_ (error "infer-type: function application to a non-function")])]))
 
 #| END P1 |#
 

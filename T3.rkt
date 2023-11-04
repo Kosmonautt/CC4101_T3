@@ -34,7 +34,8 @@
   (numT)
   (arrowT input output))
 
-;; parse-type : pasa un expresión s-expr a una Type
+;; parse-type : s-expr -> Type 
+;; Pasa un expresión s-expr a una Type
 (define (parse-type t)
   (match t
     [n #:when (equal? n 'Number) (numT)]
@@ -67,7 +68,31 @@
     ))
 
 ;; infer-type : ...
-(define (infer-type expr tenv) '???)
+(define (infer-type expr tenv) 
+  (match expr
+    [(num n) (numT)]
+    [(binop op l r)
+            (if (and (equal? (infer-type l tenv) (numT)) (equal? (infer-type r tenv) (numT))) 
+              (numT)
+              (error 'infer-type "invalid operand type for ~a" op))]
+    [(id s) (tenv-lookup s tenv)]
+    [(fun s T1 e)
+              (define T2 (infer-type e (extend-tenv s T1 tenv)))
+              (arrowT T1 T2)]
+    ; [(app e1 e2) 
+    ;           (define e1-type (infer-type e1 tenv))
+    ;           (define e2-type (infer-type e2 tenv))
+    ;           (define is-func 
+    ;             (match e1-type
+    ;               [(arrowT T1 T2) #t]
+    ;               [_ #f])) 
+    ;           (if is-func
+    ;             ((def (arrowT T1 T2) e1-type)
+    ;               (if (equal? e2-type T1)
+    ;                     T2
+    ;                     (error "infer-type: function argument type mismatch")))
+    ;             (error "infer-type: function application to a non-function"))]
+    ))
 
 #| END P1 |#
 

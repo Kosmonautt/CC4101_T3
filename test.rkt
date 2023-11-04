@@ -29,6 +29,8 @@
 (test (infer-type (fun 'x (numT) (binop '+ (id 'x) (num 1))) empty-tenv) (arrowT (numT) (numT)))
 (test (infer-type (fun 'x (arrowT (numT) (numT)) (id 'x)) empty-tenv) (arrowT (arrowT (numT) (numT)) (arrowT (numT) (numT))))
 (test (infer-type (app (fun 'x (numT) (id 'x)) (num 2)) empty-tenv) (numT))
+(test (infer-type (app (fun 'x (numT) (num 5)) (num 2)) empty-tenv) (numT))
+(test (infer-type (app (fun 'y (arrowT (numT) (numT)) (num 5)) (fun 'x (numT) (binop '* (num 2) (id 'x)))) empty-tenv) (numT))
 (test/exn (infer-type (binop '+ (num 1) (fun 'x (numT) (id 'x))) empty-tenv) "infer-type: invalid operand type for +")
 (test/exn (infer-type (binop '- (num 1) (fun 'x (numT) (id 'x))) empty-tenv) "infer-type: invalid operand type for -")
 (test/exn (infer-type (binop '* (num 1) (fun 'x (numT) (id 'x))) empty-tenv) "infer-type: invalid operand type for *")

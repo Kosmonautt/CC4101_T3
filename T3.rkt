@@ -6,6 +6,8 @@
           | (+ <Expr> <Expr>)
           | (- <Expr> <Expr>)
           | (* <Expr> <Expr>)
+          | (tt)
+          | (ff)
           | <id>
           | (fun (<id> : <Type>) <Expr>)
           | (<Expr> <Expr>);
@@ -14,6 +16,8 @@
   ;; core
   (num n)
   (binop op l r)
+  (tt)
+  (ff)
   ;; unary first-class functions
   (id x)
   (fun binder binderType body)
@@ -32,6 +36,7 @@
 
 (deftype Type 
   (numT)
+  (boolT)
   (arrowT input output))
 
 ;; parse-type : s-expr -> Type 
@@ -39,12 +44,15 @@
 (define (parse-type t)
   (match t
     [n #:when (equal? n 'Number) (numT)]
+    [b #:when (equal? b 'Boolean) (boolT)]
     [(list '-> in out) (arrowT (parse-type in) (parse-type out))]))
 
 ;; parse : s-expr -> Expr
 (define (parse s)
   (match s
     [n #:when (number? n) (num n)]
+    [b #:when (equal? b 'true) (tt)] 
+    [b #:when (equal? b 'false) (ff)] 
     [x #:when (symbol? x) (id x)]
     [(list '+ l r) (binop '+ (parse l) (parse r))]
     [(list '- l r) (binop '- (parse l) (parse r))]
@@ -76,6 +84,8 @@
             (if (and (equal? (infer-type l tenv) (numT)) (equal? (infer-type r tenv) (numT))) 
               (numT)
               (error 'infer-type "invalid operand type for ~a" op))]
+    [(tt) (boolT)]
+    [(ff) (boolT)]
     [(id s) (tenv-lookup s tenv)]
     [(fun s T1 e)
               (define T2 (infer-type e (extend-tenv s T1 tenv)))

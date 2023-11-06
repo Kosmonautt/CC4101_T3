@@ -39,10 +39,19 @@
 
 #| Parte B |#
 
+;; función in-list
+(test (in-list '+ (list '+ '- '*)) true)
+(test (in-list '- (list '+ '- '*)) true)
+(test (in-list '* (list '+ '- '*)) true)
+(test (in-list '<= (list '+ '- '*)) false)
+(test (in-list '+ (list '<=)) false)
+(test (in-list '- (list '<=)) false)
+(test (in-list '* (list '<=)) false)
+(test (in-list '<= (list '<=)) true)
+
 ;; función parse
 (test (parse 'true) (tt))
 (test (parse 'false) (ff))
-
 
 ;; función parse-type
 (test (parse-type 'Boolean) (boolT))
@@ -51,7 +60,6 @@
 (test (parse-type '(-> Boolean Number)) (arrowT (boolT) (numT)))
 (test (parse-type '(-> Boolean Number)) (arrowT (boolT) (numT)))
 (test (parse-type '(-> (-> (-> Boolean Number) (-> Number Boolean)) (-> Boolean Boolean))) (arrowT (arrowT (arrowT (boolT) (numT)) (arrowT (numT) (boolT))) (arrowT (boolT) (boolT))))
-
 
 ;; función infer-type
 (test (infer-type (tt) empty-tenv) (boolT))

@@ -75,6 +75,15 @@
     [(aTenv id type rest) (if (symbol=? id x) type (tenv-lookup x rest))]
     ))
 
+;; in-list :: Symbol Listof(Symbol) -> bool
+;; revisa si un simbolo está en una lista de simbolos, si es que
+;; está retorna true, si no, retorna false
+(define (in-list s l)
+  (match l
+    [(cons h t) (if (equal? s h) true (in-list s t))]
+    [t (if (equal? s t) true false)]
+    ['() false]))
+
 ;; infer-type : Expr tenv -> Type
 ;; Función que recibe una Expr y retorna su Type
 (define (infer-type expr tenv) 

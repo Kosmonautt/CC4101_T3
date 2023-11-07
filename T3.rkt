@@ -6,6 +6,7 @@
           | (+ <Expr> <Expr>)
           | (- <Expr> <Expr>)
           | (* <Expr> <Expr>)
+          | (<= <Expr> <Expr>)
           | (tt)
           | (ff)
           | <id>
@@ -28,10 +29,11 @@
 
 #|
   Type ::= (number)
+         | (boolT)
          | (arrow Type Type) 
 
 |#
-;; Datatype que representa tipos (número, función, ...) en el lenguaje
+;; Datatype que representa tipos (número, función, bool, ...) en el lenguaje
 
 
 (deftype Type 
@@ -57,6 +59,7 @@
     [(list '+ l r) (binop '+ (parse l) (parse r))]
     [(list '- l r) (binop '- (parse l) (parse r))]
     [(list '* l r) (binop '* (parse l) (parse r))]
+    [(list '<= l r) (binop '<= (parse l) (parse r))]
     [(list 'fun (list binder ': type) body) (fun binder (parse-type type) (parse body))]
     [(list callee arg) (app (parse callee) (parse arg))]
     [_ (error 'parse "invalid syntax: ~a" s)]))
@@ -91,7 +94,9 @@
     [(num n) (numT)]
     [(binop op l r)
             (if (and (equal? (infer-type l tenv) (numT)) (equal? (infer-type r tenv) (numT))) 
-              (numT)
+              (if (in-list op (list '+ '- '*))
+                (numT)
+                (boolT))
               (error 'infer-type "invalid operand type for ~a" op))]
     [(tt) (boolT)]
     [(ff) (boolT)]

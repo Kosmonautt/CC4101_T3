@@ -53,6 +53,10 @@
 (test (parse 'true) (tt))
 (test (parse 'false) (ff))
 
+(test (parse '(<= 1 2)) (binop '<= (num 1) (num 2)))
+(test (parse '(<= 5 2)) (binop '<= (num 5) (num 2)))
+
+
 ;; función parse-type
 (test (parse-type 'Boolean) (boolT))
 (test (parse-type '(-> Boolean Boolean)) (arrowT (boolT) (boolT)))
@@ -74,5 +78,12 @@
 (test/exn (infer-type (app (tt) (num 2)) empty-tenv) "infer-type: function application to a non-function") 
 (test/exn (infer-type (app (fun 'b (boolT) (id 'b)) (num 2)) empty-tenv) "infer-type: function argument type mismatch")
 (test/exn (infer-type (app (fun 'x (numT) (id 'x)) (tt)) empty-tenv) "infer-type: function argument type mismatch")
+
+(test (infer-type (binop '<= (num 1) (num 2)) empty-env) (boolT))
+(test (infer-type (binop '<= (num 5) (num 2)) empty-env) (boolT))
+(test/exn (infer-type (binop '<= (num 1) (ff)) empty-env) "infer-type: invalid operand type for <=")
+(test/exn (infer-type (binop '<= (tt) (num 1)) empty-env) "infer-type: invalid operand type for <=")
+(test (infer-type (binop '<= (binop '+ (num 2) (num 4)) (binop '* (num 2) (binop '+ (binop '- (num 10) (num 5)) (num 4)))) empty-env) (boolT))
+
 
 

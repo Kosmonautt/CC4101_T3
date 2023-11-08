@@ -99,6 +99,8 @@
 
 #| P2 |#
 
+#| Parte A |#
+
 (test (final? (num 1)) #t)
 (test (final? (fun 'x (numT) (id 'x))) #t)
 (test (final? (fun 'x (numT) (binop + (num 2) (num 7)))) #t)
@@ -113,3 +115,11 @@
 (test (final? (app (fun 'x (numT) (binop + (num 2) (num 7))) (num 2))) #f)
 (test (final? (app (fun 'x (numT) (binop + (id 'x) (num 7))) (num 2))) #f)
 (test (final? (app (fun 'x (numT) (binop + (binop * (id 'x) (num 5)) (num 7))) (num 2))) #f)
+
+#| Parte D |#
+
+(test (inject (num 1)) (st (num 1) empty-env empty-kont))
+(test (inject (binop '* (num 2) (binop '+ (binop '- (num 10) (num 5)) (num 4))) ) (st (binop '* (num 2) (binop '+ (binop '- (num 10) (num 5)) (num 4)))  empty-env empty-kont))
+(test (inject (id 'x)) (st (id 'x) empty-env empty-kont))
+(test (inject (fun 'x (numT) (id 'x))) (st (fun 'x (numT) (id 'x)) empty-env empty-kont))
+(test (inject (app (fun 'x (numT) (id 'x)) (num 2))) (st (app (fun 'x (numT) (id 'x)) (num 2)) empty-env empty-kont))

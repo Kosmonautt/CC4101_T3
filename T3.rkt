@@ -172,20 +172,32 @@
     [(fun s T1 e) #t]
     [_ #f]))
 
+#|
+  Kont ::= (mt-k)
+         | (binop-r-k r r-env <Kont>)
+         | (binop-l-k l-eval l-env <Kont>)
+         | (arg-k arg arg-env <Kont>)
+         | (fun-k fun-eval fun-env <Kont>)
+
+|#
+;; Datatype que representa el stack de acciones por realizar
 (deftype Kont
   (mt-k) ; empty kont
-  ;; ...
-  )
+  (binop-r-k r r-env ref-last)
+  (binop-l-k l-eval l-env ref-last)
+  (arg-k arg arg-env ref-last)
+  (fun-k fun-eval fun-env ref-last))
 
 (define empty-kont (mt-k))
 
 ;; State ::= (<Expr>, <Env>, <Kont>)
+;; Datatype que representa el estado de la máquina CEK
 (deftype State
-  (st expr env kont)
-  )
+  (st expr env kont))
 
 ;; inject : ...
-(define (inject expr) '???)
+(define (inject expr) 
+  (st expr empty-env empty-kont))
 
 ;; step : ...
 (define (step c) '???)

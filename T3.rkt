@@ -195,12 +195,25 @@
 (deftype State
   (st expr env kont))
 
-;; inject : ...
+;; inject : Expr -> State
+;; Función que recibe una expresión y retorna un estado inicial con la expresión dada
 (define (inject expr) 
   (st expr empty-env empty-kont))
 
-;; step : ...
-(define (step c) '???)
+;; step : State -> State
+;; Función que recibe un estado y lo avanza en un paso
+(define (step c)
+  (match c
+    [(st (binop op e1 e2) gamma k) (st e1 gamma (binop-r-k op e2 gamma k))] ;; RLEFT
+    [(st (id x) gamma k)  ;; Rvar
+                      (define found (env-lookup x gamma))
+                      (st (car found) (cdr found) k)]
+    [(st (app e1 e2) gamma k) (st e1 gamma (arg-k e2 gamma k))] ;; RFUN
+    [(st (num v1) gamma (binop-r-k op e2 gamma_p k)) (st e2 gamma_p (binop-l-k op (num v1) gamma k))] ;; RRight
+    [(st (num v2) gamma (binop-l-k op (num v1) gamma_p k)) (st (num (+ v1 v2)) gamma k)] ;;Rbinop
+    [(st v1 gamma (arg-k e2 gamma_p k)) (st e2 gamma_p (fun-k v1 gamma k))] ;;Rarg
+    [(st v2 gamma (fun-k (fun x x_T e) gamma_p k)) (st e (extend-env x (cons v2 gamma) (mtEnv)) k)] ;; RAPP
+    ))
 
 ;; eval : Expr -> Expr
 (define (eval expr)

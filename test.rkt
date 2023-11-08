@@ -123,3 +123,14 @@
 (test (inject (id 'x)) (st (id 'x) empty-env empty-kont))
 (test (inject (fun 'x (numT) (id 'x))) (st (fun 'x (numT) (id 'x)) empty-env empty-kont))
 (test (inject (app (fun 'x (numT) (id 'x)) (num 2))) (st (app (fun 'x (numT) (id 'x)) (num 2)) empty-env empty-kont))
+
+#| Parte E |#
+
+(test (step (st (binop '+ (num 1) (num 2)) (mtEnv) (mt-k))) (st (num 1) (mtEnv) (binop-r-k '+ (num 2) (mtEnv) (mt-k))))
+(test (step (st (num 1) (mtEnv) (binop-r-k '+ (num 2) (mtEnv) (mt-k)))) (st (num 2) (mtEnv) (binop-l-k '+ (num 1) (mtEnv) (mt-k))))
+(test (step (st (num 2) (mtEnv) (binop-l-k '+ (num 1) (mtEnv) (mt-k)))) (st (num 3) (mtEnv) (mt-k)))
+
+(test (step (st (app (fun 'x (numT) (id 'x)) (num 2)) (mtEnv) (mt-k))) (st (fun 'x (numT) (id 'x)) (mtEnv) (arg-k (num 2) (mtEnv) (mt-k))))
+(test (step (st (fun 'x (numT) (id 'x)) (mtEnv) (arg-k (num 2) (mtEnv) (mt-k)))) (st (num 2) (mtEnv) (fun-k (fun 'x (numT) (id 'x)) (mtEnv) (mt-k))))
+(test (step (st (num 2) (mtEnv) (fun-k (fun 'x (numT) (id 'x)) (mtEnv) (mt-k)))) (st (id 'x) (extend-env 'x (cons (num 2) (mtEnv)) (mtEnv)) (mt-k)))
+(test (step (st (id 'x) (extend-env 'x (cons (num 2) (mtEnv)) (mtEnv)) (mt-k))) (st (num 2) (mtEnv) (mt-k)))

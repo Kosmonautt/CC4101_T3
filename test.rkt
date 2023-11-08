@@ -97,3 +97,19 @@
 (test/exn (infer-type (ifc (fun 'b (numT) (ff)) (num 2) (num 3)) empty-tenv) "infer-type: if condition must be a boolean")
 (test/exn (infer-type (ifc (binop '<= (num 5) (num 6)) (num 2) (tt)) empty-tenv) "infer-type: if branches type mismatch")
 
+#| P2 |#
+
+(test (final? (num 1)) #t)
+(test (final? (fun 'x (numT) (id 'x))) #t)
+(test (final? (fun 'x (numT) (binop + (num 2) (num 7)))) #t)
+(test (final? (fun 'x (numT) (binop + (id 'x) (num 7)))) #t)
+(test (final? (fun 'x (numT) (binop + (binop * (id 'x) (num 5)) (num 7)))) #t)
+(test (final? (binop '+ (num 1) (num 2))) #f)
+(test (final? (binop '- (num 4) (num 2))) #f)
+(test (final? (binop '* (num 1) (num 7))) #f)
+(test (final? (binop '+ (binop '- (num 4) (num 2)) (binop '* (num 1) (num 7)))) #f)
+(test (final? (id 'x)) #f)
+(test (final? (app (fun 'x (numT) (id 'x)) (num 2))) #f)
+(test (final? (app (fun 'x (numT) (binop + (num 2) (num 7))) (num 2))) #f)
+(test (final? (app (fun 'x (numT) (binop + (id 'x) (num 7))) (num 2))) #f)
+(test (final? (app (fun 'x (numT) (binop + (binop * (id 'x) (num 5)) (num 7))) (num 2))) #f)

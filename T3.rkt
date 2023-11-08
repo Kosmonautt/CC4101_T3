@@ -164,8 +164,13 @@
 
 #| BEGIN P2 |#
 
-;; final? : ...
-(define (final? e) '???)
+;; final? : Expr -> Bool
+;; Función que revisa si la expresión corresponde a un valor, si lo es retorna true, si no, retorna false
+(define (final? e) 
+  (match e
+    [(num 1) #t]
+    [(fun s T1 e) #t]
+    [_ #f]))
 
 (deftype Kont
   (mt-k) ; empty kont

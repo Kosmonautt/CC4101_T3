@@ -9,6 +9,7 @@
           | (<= <Expr> <Expr>)
           | (tt)
           | (ff)
+          | (ifc <Expr> <Expr> <Expr>)
           | <id>
           | (fun (<id> : <Type>) <Expr>)
           | (<Expr> <Expr>);
@@ -19,6 +20,7 @@
   (binop op l r)
   (tt)
   (ff)
+  (ifc c t e)
   ;; unary first-class functions
   (id x)
   (fun binder binderType body)
@@ -60,6 +62,7 @@
     [(list '- l r) (binop '- (parse l) (parse r))]
     [(list '* l r) (binop '* (parse l) (parse r))]
     [(list '<= l r) (binop '<= (parse l) (parse r))]
+    [(list 'if c t e) (ifc (parse c) (parse t) (parse e))]
     [(list 'fun (list binder ': type) body) (fun binder (parse-type type) (parse body))]
     [(list callee arg) (app (parse callee) (parse arg))]
     [_ (error 'parse "invalid syntax: ~a" s)]))
@@ -98,6 +101,12 @@
                 (numT)
                 (boolT))
               (error 'infer-type "invalid operand type for ~a" op))]
+    [(ifc c t e) 
+              (if (equal? (infer-type c tenv) (boolT))
+                (if (equal? (infer-type t tenv) (infer-type e tenv))
+                  (infer-type t tenv)
+                  (error "infer-type: if branches type mismatch"))
+                (error "infer-type: if condition must be a boolean"))]
     [(tt) (boolT)]
     [(ff) (boolT)]
     [(id s) (tenv-lookup s tenv)]

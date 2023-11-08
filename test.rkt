@@ -56,6 +56,10 @@
 (test (parse '(<= 1 2)) (binop '<= (num 1) (num 2)))
 (test (parse '(<= 5 2)) (binop '<= (num 5) (num 2)))
 
+(test (parse '(if (<= 5 6) true false)) (ifc (binop '<= (num 5) (num 6)) (tt) (ff)))
+(test (parse '(if (<= 5 6) 2 3)) (ifc (binop '<= (num 5) (num 6)) (num 2) (num 3)))
+(test (parse '(if true 1 0)) (ifc (tt) (num 1) (num 0)))
+(test (parse '(if false 1 0)) (ifc (ff) (num 1) (num 0)))
 
 ;; función parse-type
 (test (parse-type 'Boolean) (boolT))
@@ -85,5 +89,11 @@
 (test/exn (infer-type (binop '<= (tt) (num 1)) empty-env) "infer-type: invalid operand type for <=")
 (test (infer-type (binop '<= (binop '+ (num 2) (num 4)) (binop '* (num 2) (binop '+ (binop '- (num 10) (num 5)) (num 4)))) empty-env) (boolT))
 
-
+(test (infer-type (ifc (binop '<= (num 5) (num 6)) (num 2) (num 3)) empty-env) (numT))
+(test (infer-type (ifc (binop '<= (num 5) (num 6)) (tt) (ff)) empty-env) (boolT))
+(test (infer-type (ifc (app (fun 'b (boolT) (id 'b)) (tt)) (num 2) (num 3)) empty-env) (numT))
+(test (infer-type (ifc (app (fun 'b (boolT) (id 'b)) (ff)) (num 2) (num 3)) empty-env) (numT))
+(test/exn (infer-type (ifc (num 5) (num 2) (num 3)) empty-tenv) "infer-type: if condition must be a boolean")
+(test/exn (infer-type (ifc (fun 'b (numT) (ff)) (num 2) (num 3)) empty-tenv) "infer-type: if condition must be a boolean")
+(test/exn (infer-type (ifc (binop '<= (num 5) (num 6)) (num 2) (tt)) empty-tenv) "infer-type: if branches type mismatch")
 

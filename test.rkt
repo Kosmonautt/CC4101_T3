@@ -102,6 +102,7 @@
 #| Parte A |#
 
 (test (final? (num 1)) #t)
+(test (final? (num 5)) #t)
 (test (final? (fun 'x (numT) (id 'x))) #t)
 (test (final? (fun 'x (numT) (binop + (num 2) (num 7)))) #t)
 (test (final? (fun 'x (numT) (binop + (id 'x) (num 7)))) #t)
@@ -134,3 +135,11 @@
 (test (step (st (fun 'x (numT) (id 'x)) (mtEnv) (arg-k (num 2) (mtEnv) (mt-k)))) (st (num 2) (mtEnv) (fun-k (fun 'x (numT) (id 'x)) (mtEnv) (mt-k))))
 (test (step (st (num 2) (mtEnv) (fun-k (fun 'x (numT) (id 'x)) (mtEnv) (mt-k)))) (st (id 'x) (extend-env 'x (cons (num 2) (mtEnv)) (mtEnv)) (mt-k)))
 (test (step (st (id 'x) (extend-env 'x (cons (num 2) (mtEnv)) (mtEnv)) (mt-k))) (st (num 2) (mtEnv) (mt-k)))
+
+#| Parte F |#
+(test (run 1) (cons (num 1) (numT)))
+(test (run '(+ 1 2)) (cons (num 3) (numT)))
+(test (run '(* 5 2)) (cons (num 10) (numT)))
+(test (run '(* (+ 3 2) (- 10 8))) (cons (num 10) (numT)))
+(test (run '(fun (x : Number) (* (+ 3 x) (- 10 8)))) (cons (fun 'x (numT) (binop '* (binop '+ (num 3) (id 'x)) (binop '- (num 10) (num 8)))) (arrowT (numT) (numT))))
+(test (run '((fun (x : Number) (* (+ 3 x) (- 10 8))) 2) ) (cons (num 10) (numT)))

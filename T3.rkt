@@ -168,7 +168,7 @@
 ;; Función que revisa si la expresión corresponde a un valor, si lo es retorna true, si no, retorna false
 (define (final? e) 
   (match e
-    [(num 1) #t]
+    [(num n) #t]
     [(fun s T1 e) #t]
     [_ #f]))
 
@@ -210,12 +210,15 @@
                       (st (car found) (cdr found) k)]
     [(st (app e1 e2) gamma k) (st e1 gamma (arg-k e2 gamma k))] ;; RFUN
     [(st (num v1) gamma (binop-r-k op e2 gamma_p k)) (st e2 gamma_p (binop-l-k op (num v1) gamma k))] ;; RRight
-    [(st (num v2) gamma (binop-l-k op (num v1) gamma_p k)) (st (num (+ v1 v2)) gamma k)] ;;Rbinop
+    [(st (num v2) gamma (binop-l-k '+ (num v1) gamma_p k)) (st (num (+ v1 v2)) gamma k)] ;;Rbinop +
+    [(st (num v2) gamma (binop-l-k '- (num v1) gamma_p k)) (st (num (- v1 v2)) gamma k)] ;;Rbinop -
+    [(st (num v2) gamma (binop-l-k '* (num v1) gamma_p k)) (st (num (* v1 v2)) gamma k)] ;;Rbinop *
     [(st v1 gamma (arg-k e2 gamma_p k)) (st e2 gamma_p (fun-k v1 gamma k))] ;;Rarg
     [(st v2 gamma (fun-k (fun x x_T e) gamma_p k)) (st e (extend-env x (cons v2 gamma) (mtEnv)) k)] ;; RAPP
     ))
 
 ;; eval : Expr -> Expr
+;; Función que evalua la Expr hasta que esta sea de tipo num o fun, osea, un valor en el lenguaje (irredcutible)
 (define (eval expr)
   (define (eval-until-final state)
     (def (st expr _ kont) state)
@@ -224,5 +227,9 @@
         (eval-until-final (step state))))
   (eval-until-final (inject expr)))
 
-;; run : ...
-(define (run s-expr) '???)
+;; run : s-expr -> (Cons Expr Type)
+;; Función que recibe una s-expr y la reduce, retornando su valor final y el tipo del resultado
+(define (run s-expr)
+  (define red-expr (eval (parse s-expr)))
+  (cons red-expr (infer-type (parse s-expr) empty-tenv))
+)

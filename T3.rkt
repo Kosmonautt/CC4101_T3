@@ -183,8 +183,8 @@
 ;; Datatype que representa el stack de acciones por realizar
 (deftype Kont
   (mt-k) ; empty kont
-  (binop-r-k r r-env ref-last)
-  (binop-l-k l-eval l-env ref-last)
+  (binop-r-k op r r-env ref-last)
+  (binop-l-k op l-eval l-env ref-last)
   (arg-k arg arg-env ref-last)
   (fun-k fun-eval fun-env ref-last))
 

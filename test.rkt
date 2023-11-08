@@ -143,3 +143,4 @@
 (test (run '(* (+ 3 2) (- 10 8))) (cons (num 10) (numT)))
 (test (run '(fun (x : Number) (* (+ 3 x) (- 10 8)))) (cons (fun 'x (numT) (binop '* (binop '+ (num 3) (id 'x)) (binop '- (num 10) (num 8)))) (arrowT (numT) (numT))))
 (test (run '((fun (x : Number) (* (+ 3 x) (- 10 8))) 2) ) (cons (num 10) (numT)))
+(test (run '((fun (f : (-> Number Number)) (+ (f 4) (- 10 8))) (fun (x : Number) (* 2 x))) ) (cons (num 10) (numT)))
